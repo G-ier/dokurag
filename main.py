@@ -53,7 +53,7 @@ def check_db() -> str:
 def delete_db_entries() -> str:
     db = DokuragDB()
     try:
-        db.db.delete()
+        db.db.delete(ids=db.db.get()["ids"])
         return "All entries deleted from the database"
     except Exception as e:
         return f"Error deleting entries: {e}"
@@ -187,6 +187,7 @@ Examples:
   %(prog)s -pdm "your question" file1.pdf file2.pdf  # Prompt with docs you provide
   %(prog)s -s                                 # Store all documents from the data folder in the database
   %(prog)s -c                                 # Check how many documents are stored in the database
+  %(prog)s -d                                 # Delete all entries from the database - used only for testing
   %(prog)s -t  testname                       # Run specific test
   %(prog)s -ta                                # Run all tests
   %(prog)s -h                                 # Show help

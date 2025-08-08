@@ -1,12 +1,27 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
-import pathlib
 
-class OpenRouter:
+class ExtendedOpenAI:
     def __init__(self):
         load_dotenv()
-        self.client = OpenAI(api_key=os.getenv("OPENROUTER_API_KEY"), base_url=os.getenv("BASE_URL"))
+
+        # Accept either OpenRouter or OpenAI credentials
+        api_key = os.getenv("OPENAI_API_KEY")
+
+        if not api_key:
+            raise RuntimeError(
+                "No API key found. Set OPENROUTER_API_KEY (for OpenRouter) or OPENAI_API_KEY (for OpenAI) in your environment or .env"
+            )
+
+        # Determine base_url
+        base_url = os.getenv("BASE_URL")
+        if not base_url:
+            base_url = "https://openrouter.ai/api/v1"
+
+        self.client = OpenAI(
+            api_key=api_key
+        )
         self.model = os.getenv("MODEL")
 
     def get_response(self, prompt):

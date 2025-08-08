@@ -34,21 +34,26 @@ pip install -r requirements.txt # 3. Install
 
 Create a `.env` file in the project root with the following variables:
 ```
-OPENROUTER_API_KEY=your_api_key_here
+OPENAI_API_KEY=key
 BASE_URL=https://openrouter.ai/api/v1
-MODEL=deepseek/deepseek-r1-0528-qwen3-8b:free
+MODEL=o3
+TOKENIZERS_PARALLELISM=false
 ```
+
 
 Replace `your_api_key_here` with your actual OpenRouter API key.
 
-You can also replace the API Key with an OpenAI API Key. the .env should then look like this:
+You can also replace the API Key with an OpenRouter API Key. the .env should then look like this:
 ```
-OPENROUTER_API_KEY=your_api_key_here
-BASE_URL=*base url of OpenAPI*
-MODEL=o3
+OPENROUTER_API_KEY=key
+BASE_URL=https://openrouter.ai/api/v1
+MODEL=deepseek/deepseek-r1-0528-qwen3-8b:free
+TOKENIZERS_PARALLELISM=false
 ```
 
-Note that only the first setup has been fully tested due to lack of OpenAI API keys.
+Both methods have been tested. OpenAI will be the preferred method.
+
+Hint: If you have a preferred embedding model from HuggingFace, then set the EMBEDDING_MODEL to that specific model. The default one used will be a multilingual embedding model.
 
 ### Basic Usage
 
@@ -92,11 +97,12 @@ uv run main.py -h
 ## Potential Future Steps
 
 - Add ingestion for images
+- Better prompt structuring
+- System prompt structuring
 - Evaluation suite and regression tests for retrieval and QA quality
 - Configurable chunking and overlap strategies with automatic tuning
 - Pluggable embedding and LLM providers with retries, rate-limit handling, and fallbacks
-- Caching of embeddings and query results; background index compaction/cleanup
-- Docker packaging and one-command local/remote deployment
-- Observability: structured logs, tracing, and metrics
+- Docker support and one-command local/remote deployment
+- Observability
 - Lightweight web UI for browsing, searching, and chatting over documents
-- Source-grounded answers with inline citations and page spans
+- UI for managing uploaded docs

@@ -1,15 +1,14 @@
 import os
 import io
+import re
 import hashlib
 from queue import Queue
 import fitz
-#from PIL import Image
-#import torch
-#from transformers import CLIPProcessor, CLIPModel
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
+from dotenv import load_dotenv
 
 """
 This class is a wrapper for the ChromaDB in the langchain way.
@@ -28,16 +27,27 @@ class DokuragDB:
     def __init__(self, documents_folder: str | None = None):
         self.setup(documents_folder)
 
-    # Setup db and retriever
+    # class vars setup
     def setup(self, documents_folder: str | None = None):
 
-        embedding_function = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-        self.db = Chroma(persist_directory="chroma_storage", embedding_function=embedding_function)
-        self.retriever = self.db.as_retriever(search_type="mmr", search_kwargs={"k": 15, "lambda_mult": 0.4})
-        self.splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=200)
+        load_dotenv()
+
+        # Select embedding model (default: 768 dims)
+        embedding_model_name = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
+
+        embedding_function = HuggingFaceEmbeddings(
+            model_name=embedding_model_name,
+            encode_kwargs={"normalize_embeddings": True},
+        )
+
+        # diff models need diff dirs to avoid dimension mismatch - BAAI -> 768 dims / allminilm -> 384 dims
+        safe_model_dir = re.sub(r"[^A-Za-z0-9._-]+", "_", embedding_model_name)
+        persist_directory = os.path.join("chroma_storage", safe_model_dir)
+
+        self.db = Chroma(persist_directory=persist_directory, embedding_function=embedding_function)
+        self.retriever = self.db.as_retriever(search_type="mmr", search_kwargs={"k": 40, "lambda_mult": 0.3})
+        self.splitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=50)
         self.documents_folder = documents_folder
-        #self.clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-        #self.clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
     # simple retriever invoking - FUTURE: maybe remove
     def query_vectors(self, query: str):
@@ -46,16 +56,6 @@ class DokuragDB:
     # Hash chunk to use as id - helper function for removing duplicates
     def hash_chunk(self, chunk: str):
         return hashlib.sha256(chunk.encode()).hexdigest()
-    
-    # embed helper
-    """
-    def embed_image_clip(self, image_bytes):
-        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        inputs = self.clip_processor(images=image, return_tensors="pt")
-        with torch.no_grad():
-            features = self.clip_model.get_image_features(**inputs)
-        return features[0].numpy()
-    """
     
     # Get file names and retrieve only non-pdf files - modeular func for loading function
     def source_files(self):
@@ -69,10 +69,10 @@ class DokuragDB:
 
         return all_files
 
-    # Load docs to db
     """
+    This function loads docs to db
+
     batch_size: int = 10 -> batch size for uploading documents
-    storage_usage: bool = True -> use current knowledge in vectrostore
     uploaded_documents: list[Document] -> use documents provided
     """
     def load_documents(self, batch_size: int = 10, uploaded_documents: list[str] | None = None):
@@ -105,26 +105,6 @@ class DokuragDB:
                                 metadata={"source": os.path.basename(file_path), "page": page_index + 1, "type": "text"}
                             ))
                             doc_ids.append(self.hash_chunk(chunk))
-
-                    # extract and add images
-                    """
-                    for img in page.get_images(full=True):
-                        xref = img[0]
-                        base_image = doc.extract_image(xref)
-                        image_bytes = base_image["image"]
-                        image_vector = self.embed_image_clip(image_bytes)
-
-                        docs_to_add.append(Document(
-                            page_content=image_vector,  # Or leave empty if vector DB handles embeddings separately
-                            metadata={
-                                "source": os.path.basename(file_path),
-                                "page": page_index + 1,
-                                "type": "image",
-                                "ext": base_image["ext"]
-                            }
-                        ))
-                        doc_ids.append(self.hash_chunk(image_bytes))  # hash raw image bytes for deduplication
-                    """
                     
             for doc, id_ in zip(docs_to_add, doc_ids):
                 try:
