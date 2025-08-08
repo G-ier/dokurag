@@ -6,6 +6,12 @@ Document RAG (Retrieval-Augmented Generation) with CLI tool for managing PDF doc
 
 DokuRAG has a simple command-line interface for uploading PDF documents to a vector database from the folder 'data' and querying them with an AI assistant. You can also upload and query at the same time with one command.
 
+How to use this experimental RAG system is very simple. Follow the conceptual steps below to use the system easily:
+1. Upload documents to the "data" folder - Store command (-s)
+2. Prompt the LLM with a question or a mini-task. - Ask database command (-pd)
+
+In the "Basic usage" section you will find the specific commands for the above steps.
+
 ## Architecture
 
 ![DokuRAG Architecture](assets/dokurag_architecture.png)
@@ -58,16 +64,10 @@ Hint: If you have a preferred embedding model from HuggingFace, then set the EMB
 ### Basic Usage
 
 ```bash
-# Upload a single PDF file
-uv run main.py -d /path/to/document.pdf
-
-# Upload multiple PDF files from a folder
-uv run main.py -db /path/to/pdf/folder
-
-# Prompt the LLM directly
+# Basic LLM proompt - does not have any document retreival capability
 uv run main.py -p "What is machine learning?"
 
-# Prompt with document context from your database
+# Prompt with document context from the database set up
 uv run main.py -pd "Explain this concept"
 
 # Run specific test
@@ -76,6 +76,15 @@ uv run --env-file .env python -m pytest tests/specific_test.py -v -s
 
 # Run all tests
 uv run main.py -ta
+
+# Check database size - amount of chunks
+uv run main.py -c
+
+# Store all the documents in the "data" folder in the database
+uv run main.py -s
+
+# Delete all the data in the database
+uv run main.py -d
 
 # Show help and all available options
 uv run main.py -h
