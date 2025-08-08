@@ -1,0 +1,26 @@
+[project]
+name = "dokurag"
+version = "0.1.0"
+description = "Simple document RAG system"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "chromadb>=1.0.15",
+    "langchain>=0.3.27",
+    "langchain-community>=0.3.27",
+    "langchain-text-splitters>=0.3.2",
+    "langchain-openai>=0.3.28",
+    "langchainhub>=0.1.21",
+    "tiktoken>=0.10.0",
+    "python-dotenv>=1.0.0",
+    "openai>=1.0.0",
+    "sentence-transformers>=5.1.0",
+    "pymupdf>=1.26.3",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest-env>=0.8.0",
+]
