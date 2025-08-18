@@ -1,6 +1,8 @@
+> Note: This project is from Ergi Isaraj.
+
 # DokuRAG
 
-Document RAG (Retrieval-Augmented Generation) with CLI tool for managing PDF documents and querying them with AI.
+Document RAG (Retrieval-Augmented Generation) with CLI tool for managing PDF documents and querying them with AI. Created by Ergi Isaraj.
 
 ## Quick Start
 

@@ -70,7 +70,6 @@ class DokuragChain:
             question: The question to ask
             documents: Optional list of document paths to include as context
 
-            
         Returns:
             The LLM's response
         """
