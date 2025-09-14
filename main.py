@@ -7,7 +7,7 @@ from pathlib import Path
 
 # app imports
 from core.chain import DokuragChain
-from db.db import DokuragDB
+from db.hybrid import HybridDB
 
 # Prompt the LLM with the given text.
 def prompt_llm(text: str) -> str:
@@ -35,7 +35,7 @@ def prompt_with_upload_documents(text: str, documents: list[str]) -> str:
 # Store documents in the data folder in the database.
 def store_documents() -> str:
 
-    db = DokuragDB("/Users/gier/projects/dokurag/data/")
+    db = HybridDB("/Users/gier/projects/dokurag/data/")
     try: 
         db.load_documents(uploaded_documents=None)
         return "Chunks stored in the database"
@@ -43,7 +43,7 @@ def store_documents() -> str:
         return f"Error storing documents: {e}"
     
 def check_db() -> str:
-    db = DokuragDB()
+    db = HybridDB()
     try:
         count = len(db.db.get()['ids'])
         return f"Chunks stored in the database: {count}"
@@ -51,7 +51,7 @@ def check_db() -> str:
         return f"Error checking documents: {e}"
     
 def delete_db_entries() -> str:
-    db = DokuragDB()
+    db = HybridDB()
     try:
         db.db.delete(ids=db.db.get()["ids"])
         return "All entries deleted from the database"
@@ -120,24 +120,24 @@ def test_specific(testname: str) -> str:
             return "rag_chain unit test FAILED"
         except Exception as import_run_error:
             return f"rag_chain test FAILED to execute: {import_run_error}"
-    elif testname.lower() == "rag_chain_quality":
+    elif testname.lower() == "weviate":
         try:
-            print("Running rag_chain_quality unit test via unittest loader...")
+            print("Running weviate unit test via unittest loader...")
             suite = unittest.defaultTestLoader.loadTestsFromName(
-                "tests.test_chain.TestDokuragChain.test_rag_chain_quality"
+                "tests.weviate_test.TestDokuragChain.test_rag_chain_quality"
             )
             runner = unittest.TextTestRunner(verbosity=2)
             result = runner.run(suite)
 
             if result.wasSuccessful():
-                return "rag_chain_quality unit test PASSED"
+                return "weviate unit test PASSED"
             if result.skipped:
-                return "rag_chain_quality unit test SKIPPED"
-            return "rag_chain_quality unit test FAILED"
+                return "weviate unit test SKIPPED"
+            return "weviate unit test FAILED"
         except Exception as import_run_error:
-            return f"rag_chain_quality test FAILED to execute: {import_run_error}"
+            return f"weviate test FAILED to execute: {import_run_error}"
     else:
-        return f"Unknown test: '{testname}'. Available tests: openrouter, simple_chain, rag_chain, rag_chain_quality"
+        return f"Unknown test: '{testname}'. Available tests: openrouter, simple_chain, rag_chain, weviate"
 
 """
 Run all tests.
