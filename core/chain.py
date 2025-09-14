@@ -5,7 +5,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from .integrations.openrouter import OpenRouter
 from .integrations.openai import ExtendedOpenAI
-from db.db import DokuragDB
+from db.hybrid import HybridDB
 
 """
 A LangChain chain that uses OpenRouter LLM for document Q&A.
@@ -61,7 +61,7 @@ class DokuragChain:
             | StrOutputParser()
         )
 
-        self.db = DokuragDB(documents_folder=documents_folder)
+        self.db = HybridDB(documents_folder=documents_folder)
     
     def invoke(self, question: str, documents: list[str] | None = None) -> str:
         """Invoke the chain with a question and optional context.

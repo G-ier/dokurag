@@ -18,6 +18,7 @@ dependencies = [
     "openai>=1.0.0",
     "sentence-transformers>=5.1.0",
     "pymupdf>=1.26.3",
+    "weaviate-client>=4.9.4",
 ]
 
 [project.optional-dependencies]

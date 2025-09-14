@@ -1,10 +1,12 @@
+_Version 2.0.1 · 250914_
+
 # DokuRAG
 
 Document RAG (Retrieval-Augmented Generation) with CLI tool for managing PDF documents and querying them with AI.
 
 ## Quick Start
 
-DokuRAG has a simple command-line interface for uploading PDF documents to a vector database from the folder 'data' and querying them with an AI assistant. You can also upload and query at the same time with one command.
+DokuRAG has a simple command-line interface for uploading PDF documents to Weviate from the folder 'data' and querying them with an AI assistant. You can also upload and query at the same time with one command.
 
 How to use this experimental RAG system is very simple. Follow the conceptual steps below to use the system easily:
 1. Upload documents to the "data" folder - Store command (-s)
@@ -25,6 +27,7 @@ cd dokurag
 
 # Install dependencies - if using uv
 uv sync
+docker compose up -d
 
 # Install dependencies - if using normal pip and venv
 python -m venv venv       # 1. Create a new env named "venv"
@@ -32,6 +35,8 @@ source venv/bin/activate  # 2. Activate it (Unix/macOS)
 # OR
 venv\Scripts\activate     # On Windows
 pip install -r requirements.txt # 3. Install
+# AND THEN
+docker compose up -d
 
 
 ```
@@ -98,20 +103,16 @@ uv run main.py -h
 - `-pd TEXT` - Prompt the LLM with text and relevant documents from the database
 - `-h` - Show help message with usage examples
 
+## Future Additions
 
-## Status
-
-🚧 **Under Development** - Core functionality is currently inplace but important production features are missing.
-
-## Potential Future Steps
-
+- MMR reranking
+- Collections management for organization of document knowledge-bases
 - Add ingestion for images
-- Better prompt structuring
-- System prompt structuring
 - Evaluation suite and regression tests for retrieval and QA quality
-- Configurable chunking and overlap strategies with automatic tuning
 - Pluggable embedding and LLM providers with retries, rate-limit handling, and fallbacks
-- Docker support and one-command local/remote deployment
 - Observability
 - Lightweight web UI for browsing, searching, and chatting over documents
 - UI for managing uploaded docs
+- Scalability improvements:
+    - clustered design for weviate instances with sharding/replication
+    - streaming chunks for better ingestion efficiency
